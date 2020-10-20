@@ -363,7 +363,7 @@ public class Solution {
 
     }
 
-    //28. 实现 strStr()
+    //28. 实现 strStr()//TODO：KMP的实现
     public int strStr(String haystack, String needle) {
         if("".equals(needle) || null == needle){
             return 0;
@@ -372,6 +372,38 @@ public class Solution {
 
         return 0;
     }
+
+    //33. 搜索旋转排序数组
+    public int search(int[] nums, int target) {
+        /*
+            思路：二分法，分开两部分，一般有序另一边则无序，
+         */
+
+        int left = 0, right = nums.length - 1;
+        while(left <= right){
+            int mid = (left + right) / 2;
+            if(nums[mid] == target){
+                return mid;
+            }
+            if(nums[mid] <= nums[right]){
+                //说明旋转点在mid之前或等于
+                if(target >= nums[mid] && target <= nums[right]){
+                    left = mid;
+                }else{
+                    right = mid-1;
+                }
+            }else{
+                //旋转点在中点之后
+                if(target <= nums[mid] && target >= nums[left]){
+                    right = mid;
+                }else{
+                    left = mid+1;
+                }
+            }
+        }
+        return -1;
+    }
+
 }
 
 
