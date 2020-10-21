@@ -404,6 +404,117 @@ public class Solution {
         return -1;
     }
 
+//    34. 在排序数组中查找元素的第一个和最后一个位置
+    public int[] searchRange(int[] nums, int target) {
+        /*
+            题目要求是logN的事件复杂度
+            二分查找没得选了,我的思路是找到对应的target下边后，从两个方向扩散，找到最开始和最后结束的
+         */
+        /*
+        int n = nums.length;
+        int[] result = {-1, -1};
+        if(n == 0 || target < nums[0] || target > nums[n-1]){ //优化一波
+            return result;
+        }
+        int r = 0, l = n - 1;
+        int index = -1, start = -1, end = -1;
+        while(r <= l){
+            int mid = (r + l) / 2;
+            if(nums[mid] == target){
+                index = mid;
+                break;
+            }else if(nums[mid] > target){
+                l = mid - 1;
+            }else{
+                r = mid + 1;
+            }
+        }
+        if(index != -1){
+            start = index;
+            end = index;
+            while(start >= 0 && nums[start] == target){
+                start--;
+            }
+            while(end < n && nums[end] == target){
+                end++;
+            }
+            result[0] = start+1;
+            result[1] = end-1;
+        }
+        return result;
+         */
+
+        int n = nums.length;
+        int[] result = {-1, -1};
+        if(n == 0 || target < nums[0] || target > nums[n-1]){ //优化一波
+            return result;
+        }
+
+        result[0] = getFirst(nums, target);
+        result[1] = getLast(nums, target);
+        return result;
+    }
+
+    private int getFirst(int nums[], int target){
+        int r = 0, l = nums.length - 1;
+        boolean flag = false;
+        while(r <= l){
+            int mid = (r + l) / 2;
+            if(nums[mid] == target){
+                flag = true;
+            }
+            if(target > nums[mid]){
+                r = mid + 1;
+            }else{
+                l = mid - 1;
+            }
+        }
+        if(flag) {
+            return r;  //因为相等的时候会走else，改变的是l
+        }else{
+            return -1;
+        }
+    }
+    private int getLast(int nums[], int target){
+        int r = 0, l = nums.length - 1;
+        boolean flag = false;
+        while(r <= l){
+            int mid = (r + l) / 2;
+            if(nums[mid] == target){
+                flag = true;
+            }
+            if(target < nums[mid]){
+                l = mid - 1;
+            }else{
+                r = mid + 1;
+            }
+        }
+        if(flag) {
+            return l;
+        }else{
+            return -1;
+        }
+    }
+
+    //925. 长按键入
+    public boolean isLongPressedName(String name, String typed) {
+        if("".equals(name) || "".equals(typed) || name.length() > typed.length()){
+            return false;
+        }
+
+        int i = 0, j = 0;
+        while(j < typed.length()){
+            if(i < name.length() && name.charAt(i) == typed.charAt(j)){
+                i++;
+                j++;
+            }else if(j > 0 && typed.charAt(j-1) == typed.charAt(j)){//此时字符不相等、判断是否有重复，重复了则下一个
+                j++;
+            }else{
+                return false;
+            }
+        }
+        return i == name.length();
+    }
 }
 
 
