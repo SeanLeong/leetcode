@@ -515,6 +515,30 @@ public class Solution {
         }
         return i == name.length();
     }
+
+    //35. 搜索插入位置
+    public int searchInsert(int[] nums, int target) {
+        if(nums.length == 0){
+            return 0;
+        }
+
+        int l = 0, r = nums.length-1;
+        while(l < r){
+            int mid = (l + r) / 2;
+            if(nums[mid] == target){
+                return mid;
+            }
+            if(target > nums[mid]){
+                l = mid + 1;
+            }else{
+                r = mid - 1;
+            }
+        }
+        if(nums[l] < target){
+            return l+1;
+        }
+        return l;
+    }
 }
 
 
