@@ -211,17 +211,17 @@ public class Solution {
         //交换i-1和t，交换后，[i, length-1]是一段上升区间，翻转即可
         //temp变量用于记录上一个值的大小, index用于记录第一个下降的下标
         int i = nums.length - 2;
-        while(i > 0 && nums[i] >= nums[i+1]){
+        while (i >= 0 && nums[i + 1] <= nums[i]) {
             i--;
         }
-        if(i >= 0){
+        if (i >= 0) {
             int j = nums.length - 1;
-            while(j > 0 && nums[j] <= nums[i]){
+            while (j >= 0 && nums[j] <= nums[i]) {
                 j--;
             }
             swap(nums, i, j);
         }
-        reverse(nums, i+1);
+        reverse(nums, i + 1);
     }
 
     private void swap(int[] nums, int i, int j){
@@ -231,15 +231,13 @@ public class Solution {
     }
 
     private void reverse(int[] nums, int start){
-        int i = start, j = nums.length;
+        int i = start, j = nums.length-1;
         while(i < j){
             swap(nums, i, j);
             i++;
             j--;
         }
     }
-}
-
     //16.最接近的三数之和
     public int threeSumClosest(int[] nums, int target) {
         int best = Integer.MAX_VALUE;
@@ -602,6 +600,39 @@ public class Solution {
             }
         }
         return true;
+    }
+
+
+    //40. 组合总和 II
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        //有重复元素，我的思路是直接排序，然后在进行搜索
+        Arrays.sort(candidates);
+        dfsCombinationSum2(result, candidates, new ArrayList<>(), target, 0);
+        return result;
+    }
+
+    private void dfsCombinationSum2(List<List<Integer>> result, int[] candidates, List<Integer> path,
+                                   int target, int index){
+        if(target == 0){
+            result.add(new ArrayList<>(path));
+            return ;
+        }
+        if(path.size() == candidates.length){
+            return ;
+        }
+
+        for(int i = index; i < candidates.length; i++){
+            if(target - candidates[i] >= 0){
+                //要去重的话，需要判断当前层，不能重复；
+                if( i > index && candidates[i] == candidates[i-1]){
+                    continue;
+                }
+                path.add(candidates[i]);
+                dfsCombinationSum2(result, candidates, path, target - candidates[i], i+1);
+                path.remove(path.size() - 1);
+            }
+        }
     }
 }
 
