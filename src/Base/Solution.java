@@ -563,6 +563,32 @@ public class Solution {
         }
         return true;
     }
+
+    //39. 组合总和
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        searchCombiantionSum(new ArrayList<>(), candidates, target, result, 0);
+        return result;
+    }
+
+    private void searchCombiantionSum(List<Integer> currResult, int[] candidates, int target, List<List<Integer>> totalResult, int index){
+        //题目要求不能重复，不考虑顺序，和合数一样，每一轮递归只是用index后面的，不往前使用
+        if(target == 0){
+            List<Integer> result = new ArrayList<>();
+            result.addAll(currResult);
+            totalResult.add(result);
+            return;
+        }
+        for(int i = index; i < candidates.length; i++){
+            if(target - candidates[i] >= 0){
+                currResult.add(candidates[i]);
+                //第i个还可以使用，但是i前面的不在允许使用了
+                searchCombiantionSum(currResult, candidates, target-candidates[i], totalResult, i);
+                currResult.remove(currResult.size()-1);
+            }
+        }
+    }
+
 }
 
 
