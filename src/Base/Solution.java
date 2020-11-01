@@ -634,6 +634,33 @@ public class Solution {
             }
         }
     }
+
+
+    //48. 旋转图像
+    public void rotate(int[][] matrix) {
+        //先转置，在中间对换
+
+        //转置
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = i+1; j < matrix.length; j++){
+                matrix[i][j] += matrix[j][i];
+                matrix[j][i] = matrix[i][j] - matrix[j][i];
+                matrix[i][j] -= matrix[j][i];
+            }
+        }
+
+        //竖对称轴交换
+        for(int i = 0; i < matrix.length; i++){
+            int right = 0, left = matrix.length-1;
+            while(right < left){
+                swap(matrix[i], right, left);
+                right++;
+                left--;
+            }
+        }
+    }
+
+
 }
 
 
