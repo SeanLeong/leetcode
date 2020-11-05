@@ -200,6 +200,44 @@ public class Solution {
         return result;
     }
 
+    //31. 下一个排列
+    public void nextPermutation(int[] nums) {
+        //实话说，这个鬼题目我都没怎么看懂
+
+        //没有太多的思路，看来题解只是觉得巧妙的很
+
+        //题解答题的思路：从右边开始遍历数组，遇到第一个下降的元素（i-1），
+        // 在[i,length-1]这一段范围进行搜索，找到最小的并且大于i-1下标元素的元素(t)
+        //交换i-1和t，交换后，[i, length-1]是一段上升区间，翻转即可
+        //temp变量用于记录上一个值的大小, index用于记录第一个下降的下标
+        int i = nums.length - 2;
+        while (i >= 0 && nums[i + 1] <= nums[i]) {
+            i--;
+        }
+        if (i >= 0) {
+            int j = nums.length - 1;
+            while (j >= 0 && nums[j] <= nums[i]) {
+                j--;
+            }
+            swap(nums, i, j);
+        }
+        reverse(nums, i + 1);
+    }
+
+    private void swap(int[] nums, int i, int j){
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    private void reverse(int[] nums, int start){
+        int i = start, j = nums.length-1;
+        while(i < j){
+            swap(nums, i, j);
+            i++;
+            j--;
+        }
+    }
     //16.最接近的三数之和
     public int threeSumClosest(int[] nums, int target) {
         int best = Integer.MAX_VALUE;
@@ -563,6 +601,66 @@ public class Solution {
         }
         return true;
     }
+
+
+    //40. 组合总和 II
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        //有重复元素，我的思路是直接排序，然后在进行搜索
+        Arrays.sort(candidates);
+        dfsCombinationSum2(result, candidates, new ArrayList<>(), target, 0);
+        return result;
+    }
+
+    private void dfsCombinationSum2(List<List<Integer>> result, int[] candidates, List<Integer> path,
+                                   int target, int index){
+        if(target == 0){
+            result.add(new ArrayList<>(path));
+            return ;
+        }
+        if(path.size() == candidates.length){
+            return ;
+        }
+
+        for(int i = index; i < candidates.length; i++){
+            if(target - candidates[i] >= 0){
+                //要去重的话，需要判断当前层，不能重复；
+                if( i > index && candidates[i] == candidates[i-1]){
+                    continue;
+                }
+                path.add(candidates[i]);
+                dfsCombinationSum2(result, candidates, path, target - candidates[i], i+1);
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+
+
+    //48. 旋转图像
+    public void rotate(int[][] matrix) {
+        //先转置，在中间对换
+
+        //转置
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = i+1; j < matrix.length; j++){
+                matrix[i][j] += matrix[j][i];
+                matrix[j][i] = matrix[i][j] - matrix[j][i];
+                matrix[i][j] -= matrix[j][i];
+            }
+        }
+
+        //竖对称轴交换
+        for(int i = 0; i < matrix.length; i++){
+            int right = 0, left = matrix.length-1;
+            while(right < left){
+                swap(matrix[i], right, left);
+                right++;
+                left--;
+            }
+        }
+    }
+
+
 
     //39. 组合总和
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
