@@ -687,6 +687,81 @@ public class Solution {
         }
     }
 
+    //49. 字母异位词分组
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> result = new ArrayList<>();
+        Map<String, List<String>> resultMap = new HashMap<>();
+        for(String str : strs){
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = new String(chars);
+            List<String> strList = resultMap.get(key);
+            if(strList == null){
+                strList = new ArrayList<>();
+            }
+            strList.add(str);
+            resultMap.put(key, strList);
+        }
+        for(String key : resultMap.keySet()){
+            result.add(resultMap.get(key));
+        }
+        return result;
+    }
+
+    //54. 螺旋矩阵
+    public List<Integer> spiralOrder(int[][] matrix) {
+        //结果列表，访问队列
+        List<Integer> result = new ArrayList<>();
+        if(matrix.length == 0 || matrix[0].length == 0 || matrix == null){
+            return result;
+        }
+        //方向
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int currDirection = 0;
+        //当前的i,j
+        int i = 0, j = 0;
+        //行列
+        int rowSize = matrix.length, colSize = matrix[0].length;
+        int totalSize = rowSize * colSize;
+        boolean[][] visited = new boolean[rowSize][colSize];
+        for(int index = 0; index < totalSize; index++){
+            /**
+             *  存在当前ij的值为结果，并且标记为已经访问
+             *  判断下一个节点是否可以被访问，能过被访问就按照原来的方向继续，不能被访问，则改变方向
+             *  计算下一个位置
+             */
+            result.add(matrix[i][j]);
+            visited[i][j] = true;
+            //需要改变方法的情况，四个边角，下一个坐标已经被访问过了
+            int nextI = i + directions[currDirection][0], nextJ = j + directions[currDirection][1];
+            if(nextI < 0 || nextI >= rowSize || nextJ < 0 || nextJ >= colSize || visited[nextI][nextJ] == true ){
+                currDirection = (currDirection + 1) % 4;
+            }
+            i += directions[currDirection][0];
+            j += directions[currDirection][1];
+
+        }
+        return result;
+    }
+
+    //55. 跳跃游戏
+    public boolean canJump(int[] nums) {
+        /*
+            贪心：标记可以跳到的最远的元素位置
+                  如果当前小于最右，则判断当前是否能够跳跃过最远的距离，能够则改变最远距离
+
+         */
+        int right = 0, n = nums.length;
+        for(int i = 0; i < n; i++){
+            if(i <= right){
+                right = Math.max(i + nums[i], right);
+                if(right >= n - 1){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
 
 
