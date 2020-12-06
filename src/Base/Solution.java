@@ -660,6 +660,144 @@ public class Solution {
         }
     }
 
+    //395. 至少有K个重复字符的最长子串
+    public int longestSubstring(String s, int k) {
+        return 0;
+        //TODO:使用分治
+
+    }
+
+    //424. 替换后的最长重复字符
+    public int characterReplacement(String s, int k) {
+
+        Map<Character, Integer> window = new HashMap();
+        int left = 0, right = 0, max_freq = 0;
+        while(right < s.length()){
+            char c = s.charAt(right);
+            right++;
+            window.put(c, window.getOrDefault(c, 0) + 1);
+            max_freq = Math.max(max_freq, window.get(c));
+
+            while(right - left - max_freq > k){
+                char d = s.charAt(left);
+                window.put(d, window.get(d) -1);
+                left++;
+            }
+        }
+        return right - left;
+    }
+
+    //978. 最长湍流子数组
+    public int maxTurbulenceSize(int[] arr) {
+        int left = 0, right = 0, max_length = 0;
+        if(arr.length == 1){
+            return 1;
+        }
+        //用于记录大小
+        int[] com = new int[arr.length - 1];
+        boolean flag = false;
+        for(int i = 0; i < arr.length - 1; i++){
+            //记录大小 1=>大 0=>相等 -1=>小
+            if(arr[i] > arr[i+1]){
+                com[i] = 1;
+                flag = true;
+            }else if(arr[i] == arr[i+1]){
+                com[i] = 0;
+            }else{
+                com[i] = -1;
+                flag = true;
+            }
+        }
+        int nearest = 0;
+        while(right < com.length){
+            if(right == 0 || com[right] * nearest == -1){
+                max_length = Math.max(max_length, right - left + 1);
+            }else{
+                left = right;
+            }
+
+            nearest = com[right];
+            right++;
+        }
+        //这里的max_length时com的最大长度
+        if(flag) {
+            return max_length + 1;
+        }else{
+            return max_length;
+        }
+    }
+
+    //438. 找到字符串中所有字母异位词
+    public List<Integer> findAnagrams(String s, String p) {
+        Map<Character, Integer> window = new HashMap();
+        Map<Character, Integer> need =  new HashMap();
+        for(Character c : p.toCharArray()){
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        List<Integer> result = new ArrayList();
+        int left = 0, right = 0, valid = 0;
+        while(right < s.length()){
+            char c = s.charAt(right);
+            right++;
+            if(need.containsKey(c)){
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if(need.get(c).equals(window.get(c))){
+                    valid++;
+                }
+            }
+
+            while(right - left >= p.length()){
+                if(valid == need.size()){
+                    result.add(left);
+                }
+                char d = s.charAt(left);
+                left++;
+                if(need.containsKey(d)){
+                    if(need.get(d).equals(window.get(d))){
+                        valid--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return result;
+    }
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        //先判断行
+        int rowLeft = 0, rowRight = matrix.length-1;
+        while(rowLeft < rowRight){
+            int rowMid = rowLeft + (rowRight - rowLeft) / 2;
+            if(matrix[rowMid][0] == target){
+                return true;
+            }else if(matrix[rowMid][0] < target){
+                rowLeft = rowMid + 1;
+            }else if(matrix[rowMid][0] > target){
+                rowRight = rowMid - 1;
+            }
+        }
+        //结束了，此时rowleft == rowRight;
+        int row = 0;
+        if(matrix[rowLeft][0] < target){
+            row = rowLeft;
+        }else{
+            row = rowLeft+1;
+        }
+        //后判断列
+        int colLeft = 0; int colRight = matrix[row].length-1;
+        while(colLeft <= colRight){
+
+            int colMid = colLeft + (colRight - colLeft) / 2;
+            if(matrix[row][colMid] == target){
+                return true;
+            }else if(matrix[row][colMid] < target){
+                colLeft = colMid + 1;
+            }else if(matrix[row][colMid] > target){
+                colRight = colMid - 1;
+            }
+        }
+        return false;
+    }
 
 
     //39. 组合总和
@@ -761,6 +899,149 @@ public class Solution {
             }
         }
         return false;
+    }
+    //209. 长度最小的子数组
+    public int minSubArrayLen(int s, int[] nums) {
+        int n = nums.length, ans = Integer.MAX_VALUE;
+        if(n == 0){
+            return 0;
+        }
+        int[] sums = new int[n+1];
+
+        for(int i = 1; i <= n; i++){
+            sums[i] = sums[i-1] + nums[i-1];
+        }
+        for(int i = 1; i <= n; i++){
+            int target = s + sums[i-1];
+            int bound = Arrays.binarySearch(sums, target);//二分查找
+            if(bound < 0){
+                bound = -bound-1;
+            }
+            if (bound <= n) {
+                ans = Math.min(ans, bound - (i - 1));
+            }
+        }
+        return ans == Integer.MAX_VALUE ? 0 : ans;
+    }
+
+    //309. 最佳买卖股票时机含冷冻期
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        if(n == 0){
+            return 0;
+        }
+        int[][] dp = new int[n][2];
+        //base
+
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for(int i = 1; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            if(i == 1){
+                dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] - prices[i]);
+            }else{
+                dp[i][1] = Math.max(dp[i-1][1], dp[i-2][0] - prices[i]);
+            }
+
+        }
+        return dp[n-1][0];
+    }
+
+    //188. 买卖股票的最佳时机 IV
+    public int maxProfit(int k, int[] prices) {
+        int n = prices.length;
+        if(n == 0) return 0;
+        if(k >= n/2){
+            //相当于的k没有限制
+            maxProfit2(prices);
+        }
+
+        int[][][] dp = new int[n][k+1][2];
+        for(int i = 0; i < n; i++){
+            for(int j = k; j >= 1; j--){
+                if(i == 0){
+                    dp[i][j][1] = -prices[i];
+                    dp[i][j][0] = 0;
+                }else{
+                    dp[i][j][1] = Math.max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i]);
+                    dp[i][j][0] = Math.max(dp[i-1][j][0], dp[i-1][j][1] + prices[i]);
+                }
+            }
+        }
+        return dp[n-1][k][0];
+    }
+
+    //没有限制交易次数的股票买卖
+    public int maxProfit2(int[] prices) {
+        int n = prices.length;
+        if(n == 0){
+            return 0;
+        }
+        int[][] dp = new int[n][2];
+        //Base 第一天
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+
+        for(int i = 1; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] - prices[i]);
+        }
+
+        return dp[n-1][0];
+    }
+
+
+    public int rob(int[] nums) {
+        //环形=》不能同时抢开头的结尾的，直接判断两种情况
+        int n = nums.length;
+        if(n == 0) return 0;
+        if(n == 1) return nums[0];
+        return Math.max(robHelper(nums, 0, n-1), robHelper(nums, 1, n));
+    }
+
+
+    public int robHelper(int[] nums, int s, int n) {
+        int[] dp = new int[n+2];
+        for(int i = n-1; i >= s; i--){
+            dp[i] = Math.max(dp[i+1], dp[i+2] + nums[i]);
+        }
+        return dp[s];
+    }
+
+    //1288. 删除被覆盖区间
+    public int removeCoveredIntervals(int[][] intervals) {
+        int n = intervals.length;
+        if(n == 0 || n == 1){
+            return n;
+        }
+        //1.排序
+        Arrays.sort(intervals, (a, b)->{
+            if(a[0] == b[0]){
+                return b[1] - a[1];
+            }
+            return a[0] - b[0];
+        });
+        //2.定位区间位置,res表示被包含的区间的数量
+        int left = intervals[0][0], right = intervals[0][1], res = 0;
+        //3.遍历判断
+        for(int i = 1; i < intervals.length; i++){
+            int[] item = intervals[i];
+            //1.情况，被包括
+            if(item[0] >= left && item[1] <= right){
+                res++;
+            }
+            //2.情况，有交叉
+            if(item[0] <= right && item[1] >= right){
+                right = item[1];
+            }
+            //3.无交叉
+            if(item[0] > right){
+                left = item[0];
+                right = item[1];
+            }
+        }
+        return n - res;
+
     }
 }
 
